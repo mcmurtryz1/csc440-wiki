@@ -260,7 +260,7 @@ class Wiki(object):
         page = self.get(url)
         if page:
             return page
-        abort(404)
+        abort(404)        
 
     def get_bare(self, url):
         path = self.path(url)
@@ -317,6 +317,18 @@ class Wiki(object):
                     page = Page(path, url)
                     pages.append(page)
         return sorted(pages, key=lambda x: x.title.lower())
+
+    def indexUploads(self):
+        uploads = []
+        #Uses the relative location of the wiki rather than a fixed path in the config
+        root = os.getcwd() + '\\upload\\'
+        for cur_dir, _, files in os.walk(root):
+            cur_dir_url = cur_dir[len(root):] #Remove the starting path of the file location
+            for cur_upload in files: #Check all files in the current direcotry
+                upload = os.path.join(cur_dir_url, cur_upload)
+                upload = upload.replace("\\", "/")
+                uploads.append(upload)
+        return sorted(uploads)
 
     def index_by(self, key):
         """

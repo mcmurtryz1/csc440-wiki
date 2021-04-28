@@ -18,6 +18,12 @@
 					<td><a href="{{ url_for('wiki.display', url=page.url) }}">{{ page.url }}</a></td>
 				</tr>
 			{% endfor %}
+			{% for upload in uploads %}
+				<tr>
+					<td>Uploaded File</td>
+					<td><a href="{{ url_for('wiki.displayUpload', url=upload) }}">{{ upload }}</a></td>
+				</tr>
+			{% endfor %}
 		</tbody>
 	</table>
 {% else %}

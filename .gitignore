@@ -1,3 +1,5 @@
 /upload/
+/content/
+config.py
 
 __pycache__/

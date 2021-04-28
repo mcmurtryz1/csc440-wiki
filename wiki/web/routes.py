@@ -9,6 +9,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask import send_file
 from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
@@ -34,7 +35,7 @@ from re import compile
 from werkzeug import secure_filename
 
 bp = Blueprint('wiki', __name__)
-uploadRegex = compile('^(.+\\\)+$')
+uploadRegex = compile('^([^/\\\]+\\\)+$')
 
 @bp.route('/')
 @protect
@@ -49,7 +50,8 @@ def home():
 @protect
 def index():
     pages = current_wiki.index()
-    return render_template('index.html', pages=pages)
+    uploads = current_wiki.indexUploads()
+    return render_template('index.html', pages=pages, uploads=uploads)
 
 
 @bp.route('/<path:url>/')
@@ -93,9 +95,15 @@ def upload():
             filename = secure_filename(file.filename)
             print(path.join(getcwd(), request.form['path'], filename))
             file.save(path.join(getcwd(), 'upload', request.form['path'], filename))
-            return redirect(request.url)
+            return redirect(str.replace(request.form['path'],"\\", "/") + filename)
     return render_template('upload.html')
 
+@bp.route('/upload/<path:url>')
+@protect
+def displayUpload(url):
+    if path.exists(path.join(getcwd(), 'upload' , url)):
+        return send_file(path.join(getcwd(), 'upload' , url))
+    return render_template('404upload.html')
 
 @bp.route('/edit/<path:url>/', methods=['GET', 'POST'])
 @protect
