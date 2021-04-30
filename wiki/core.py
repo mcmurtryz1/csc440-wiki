@@ -6,6 +6,7 @@ from collections import OrderedDict
 from io import open
 import os
 import re
+import sys
 
 from flask import abort
 from flask import url_for
@@ -321,7 +322,10 @@ class Wiki(object):
     def indexUploads(self):
         uploads = []
         #Uses the relative location of the wiki rather than a fixed path in the config
-        root = os.getcwd() + '\\upload\\'
+        if sys.platform == 'darwin':
+            root = os.getcwd() + '/upload/'
+        else:
+            root = os.getcwd() + '\\upload\\'
         for cur_dir, _, files in os.walk(root):
             cur_dir_url = cur_dir[len(root):] #Remove the starting path of the file location
             for cur_upload in files: #Check all files in the current direcotry

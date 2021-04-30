@@ -2,6 +2,8 @@
     Routes
     ~~~~~~
 """
+import os
+
 from flask import Blueprint
 from flask import current_app
 from flask import flash
@@ -29,6 +31,7 @@ from os import path
 from os import getcwd
 
 import pathlib
+import sys
 
 from re import compile
 
@@ -91,12 +94,18 @@ def upload():
             flash('No selected file')
             return redirect(request.url)
         if file:
-            pathlib.Path(path.join(getcwd(), 'upload', request.form['path'])).mkdir(parents=True, exist_ok=True)
+            if sys.platform == 'darwin':
+                os_path = str.replace(request.form['path'],"\\", "/")
+            else:
+                os_path = request.form['path'],"\\", "/"
+            pathlib.Path(path.join(getcwd(), 'upload', os_path)).mkdir(parents=True, exist_ok=True)
             filename = secure_filename(file.filename)
-            print(path.join(getcwd(), request.form['path'], filename))
-            file.save(path.join(getcwd(), 'upload', request.form['path'], filename))
+            print(path.join(getcwd(), os_path, filename))
+            file.save(path.join(getcwd(), 'upload', os_path, filename))
             return redirect(str.replace(request.form['path'],"\\", "/") + filename)
-    return render_template('upload.html')
+    uploads = current_wiki.indexUploads()
+    url = request.url
+    return render_template('upload.html', uploads=uploads, url=url)
 
 @bp.route('/upload/<path:url>')
 @protect
@@ -144,10 +153,17 @@ def move(url):
 @bp.route('/delete/<path:url>/')
 @protect
 def delete(url):
-    page = current_wiki.get_or_404(url)
-    current_wiki.delete(url)
-    flash('Page "%s" was deleted.' % page.title, 'success')
-    return redirect(url_for('wiki.home'))
+    # check if we have an upload file or a page
+    if url[0:6] == 'upload':
+        # delete uploaded file
+        os.remove(url)
+        return redirect(url_for('wiki.upload'))
+    else:
+        # delete page
+        page = current_wiki.get_or_404(url)
+        current_wiki.delete(url)
+        flash('Page "%s" was deleted.' % page.title, 'success')
+        return redirect(url_for('wiki.home'))
 
 
 @bp.route('/tags/')
