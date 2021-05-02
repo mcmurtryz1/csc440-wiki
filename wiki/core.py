@@ -7,6 +7,7 @@ from io import open
 import os
 import re
 import sys
+from os import path
 
 from flask import abort
 from flask import url_for
@@ -391,3 +392,25 @@ class Wiki(object):
                     matched.append(page)
                     break
         return matched
+
+    def deleteUpload(self, url):
+        os.remove(url)
+        clearEmptyDirectories()
+
+def clearEmptyDirectories():
+    root = path.join(os.getcwd(), 'upload')
+    folders = list(os.walk(root))[1:]
+    cleared = False
+
+    while not cleared:
+        for folder in reversed(folders):
+            if not folder[2] and not folder[1]:
+                os.rmdir(folder[0])
+        folders = list(os.walk(root))[1:]
+        cleared = isEmptyDirectory(folders)
+
+def isEmptyDirectory(folders):
+    for folder in reversed(folders):
+        if not folder[2] and not folder[1]:
+            return False
+    return True
