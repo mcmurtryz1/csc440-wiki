@@ -96,7 +96,7 @@ def upload():
             if sys.platform == 'darwin':
                 os_path = str.replace(request.form['path'],"\\", "/")
             else:
-                os_path = request.form['path'],"\\", "/"
+                os_path = request.form['path']
             pathlib.Path(path.join(getcwd(), 'upload', os_path)).mkdir(parents=True, exist_ok=True)
             filename = secure_filename(file.filename)
             print(path.join(getcwd(), os_path, filename))
