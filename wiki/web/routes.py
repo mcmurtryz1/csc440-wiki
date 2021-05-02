@@ -26,7 +26,6 @@ from wiki.web import current_wiki
 from wiki.web import current_users
 from wiki.web.user import protect
 
-from os import mkdir
 from os import path
 from os import getcwd
 
@@ -156,7 +155,7 @@ def delete(url):
     # check if we have an upload file or a page
     if url[0:6] == 'upload':
         # delete uploaded file
-        os.remove(url)
+        current_wiki.deleteUpload(url)
         return redirect(url_for('wiki.upload'))
     else:
         # delete page

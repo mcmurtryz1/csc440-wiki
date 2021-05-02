@@ -19,7 +19,7 @@
 				<tr>
 					<td>Uploaded File</td>
 					<td><a href="{{ url_for('wiki.displayUpload', url=upload) }}">{{ upload }}</a></td>
-                    <td><a href="{{ url_for('wiki.delete', url=upload) }}" class="btn btn-danger">Delete</a> </td>
+                    <td><a href="{{ url_for('wiki.delete', url='upload/'+upload) }}" class="btn btn-danger">Delete</a> </td>
 				</tr>
 			{% endfor %}
 		</tbody>
